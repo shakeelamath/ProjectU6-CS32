@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'ProjectU6.',
+          'Music.',
           style: TextStyle(
             color: accent.primary,
             fontSize: 35,
