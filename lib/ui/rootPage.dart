@@ -15,6 +15,7 @@ import 'package:musify/ui/playlistsPage.dart';
 import 'package:musify/ui/searchPage.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
+
 class Musify extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -79,6 +80,16 @@ class AppState extends State<Musify> {
         activeColor: accent.primary,
         inactiveColor: Theme.of(context).hintColor,
       ),
+      BottomNavBarItem(
+        icon: const Icon(MdiIcons.camera),
+        title: Text(
+          AppLocalizations.of(context)!.search,
+          maxLines: 1,
+        ),
+        activeColor: accent.primary,
+        inactiveColor: Theme.of(context).hintColor,
+      ),
+
       BottomNavBarItem(
         icon: const Icon(MdiIcons.book),
         title: Text(
