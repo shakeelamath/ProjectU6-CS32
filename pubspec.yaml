@@ -42,7 +42,7 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   http: ^0.13.5
-  intl: ^0.17.0 
+  intl: ^0.17.0
   just_audio: ^0.9.30
   material_design_icons_flutter: ^5.0.6996
   on_audio_query: ^2.6.1
