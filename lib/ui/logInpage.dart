@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:musify/ui/aboutPage.dart';
 import 'package:musify/ui/homePage.dart';
-import 'package:musify/ui/singUpPage.dart';
+import 'package:musify/ui/signUpPage.dart';
 
 
 void main() => runApp(const MyApps());
@@ -112,7 +112,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   ),
                   onPressed: () {
                     Navigator.push(context,
-                      MaterialPageRoute(builder: (context) =>   SignUpPage()
+                      MaterialPageRoute(builder: (context) =>   SignupPage()
                      ),
                     );
                     //signup screen
