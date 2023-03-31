@@ -98,26 +98,27 @@ class _SignupPageState extends State<SignupPage> {
                   SizedBox(height: 16),
                   ElevatedButton(
                     child: Text('Sign Up'),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState != null && _formKey.currentState!.validate()) {
                         // form is valid
                         String username = _userNameController.text;
                         String name = _nameController.text;
                         String email = _emailController.text;
                         String password = _passwordController.text;
-                        // add your own implementation here
+
+                        final signUpData = SignUpData(username: username, name: name, email: email, password: password);
+                        storeSignUpData(signUpData);
+
                         if(checkSignUpData(username, email)!=null){
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          /**ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('These details are already exist.'),
                               backgroundColor: Colors.red,
                             ),
-                          );
+                          );**/
                         }
                         else{
-                          final signUpData = SignUpData(username: username, name: name, email: email, password: password);
-                          storeSignUpData(signUpData);
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          /**ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Your account is created.'),
                               backgroundColor: Colors.green,
@@ -126,7 +127,7 @@ class _SignupPageState extends State<SignupPage> {
                           Navigator.push(context,
                             MaterialPageRoute(builder: (context) =>   MyApps()
                             ),
-                          );
+                          );**/
                         }
                       }
                     },
