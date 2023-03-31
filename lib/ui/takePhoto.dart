@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:musify/ui/homePage.dart';
+
+import 'homePage.dart';
 
 class TakePhoto extends StatelessWidget {
   @override
@@ -12,7 +13,6 @@ class TakePhoto extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.pink,
       ),
-
       home: CameraScreen(),
     );
   }
@@ -24,7 +24,9 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  File _image = File('');
+  File _image;
+
+  // TODO: Load emotion detection model
 
   Future<void> _takePicture() async {
     final picker = ImagePicker();
@@ -32,6 +34,8 @@ class _CameraScreenState extends State<CameraScreen> {
     setState(() {
       if (image != null) {
         _image = File(image.path);
+        // TODO: Pass captured image to the emotion detection model and get the predicted emotion
+        // You can update the UI here based on the predicted emotion
       }
     });
   }
