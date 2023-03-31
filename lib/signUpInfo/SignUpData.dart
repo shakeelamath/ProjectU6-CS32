@@ -1,7 +1,5 @@
-import 'dart:async' show Future;
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/services.dart' show rootBundle;
 
 class SignUpData {
   final String username;
@@ -9,11 +7,7 @@ class SignUpData {
   final String email;
   final String password;
 
-  SignUpData(
-      {required this.username,
-        required this.name,
-        required this.email,
-        required this.password});
+  SignUpData({required this.username, required this.name, required this.email, required this.password});
 
   factory SignUpData.fromJson(Map<String, dynamic> json) {
     return SignUpData(
@@ -35,11 +29,14 @@ class SignUpData {
 }
 
 Future<String?> checkSignUpData(String username, String email) async {
-  final contents = await rootBundle.loadString('assets/db/signup_data.json');
-  final decodedData = json.decode(contents);
-  final jsonList = decodedData is List<dynamic> ? decodedData : [decodedData];
-  final signUpDataList =
-  jsonList.map((json) => SignUpData.fromJson(json)).toList();
+  final file = File('signup_data.json');
+  if (!await file.exists()) {
+    return null;
+  }
+
+  final contents = await file.readAsString();
+  final jsonList = json.decode(contents) as List<dynamic>;
+  final signUpDataList = jsonList.map((json) => SignUpData.fromJson(json)).toList();
 
   for (final signUpData in signUpDataList) {
     if (signUpData.username == username) {
@@ -56,24 +53,23 @@ Future<String?> checkSignUpData(String username, String email) async {
 Future<void> storeSignUpData(SignUpData signUpData) async {
   final signUpJson = signUpData.toJson();
 
-  final file = File('assets/db/signup_data.json');
+  final file = File('signup_data.json');
   await file.writeAsString(json.encode([signUpJson]));
 }
 
 /**void main() async {
-    final username = 'johnP';
-    final name = 'John Doe';
-    final email = 'johnd@gmail.com';
-    final password = 'johnd';
+  final username = 'example_user';
+  final name = 'example_name';
+  final email = 'example@example.com';
+  final password = 'example_password';
 
-    final error = await checkSignUpData(username, email);
-    if (error != null) {
+  final error = await checkSignUpData(username, email);
+  if (error != null) {
     print('Error: $error');
     return;
-    }
+  }
 
-    final signUpData =
-    SignUpData(username: username, name: name, email: email, password: password);
-    await storeSignUpData(signUpData);
-    print('Sign up data stored successfully');
-    }**/
+  final signUpData = SignUpData(username: username, name: name, email: email, password: password);
+  await storeSignUpData(signUpData);
+  print('Sign up data stored successfully');
+}**/
