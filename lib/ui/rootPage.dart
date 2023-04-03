@@ -13,6 +13,7 @@ import 'package:musify/ui/morePage.dart';
 import 'package:musify/ui/player.dart';
 import 'package:musify/ui/playlistsPage.dart';
 import 'package:musify/ui/searchPage.dart';
+import 'package:musify/ui/signUpPage.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:musify/ui/takePhoto.dart';
 
@@ -74,9 +75,9 @@ class AppState extends State<Musify> {
         inactiveColor: Theme.of(context).hintColor,
       ),
       BottomNavBarItem(
-        icon: const Icon(MdiIcons.magnify),
+        icon: const Icon(MdiIcons.googleNearby),
         title: Text(
-          AppLocalizations.of(context)!.search,
+          AppLocalizations.of(context)!.nearBySharing,
           maxLines: 1,
         ),
         activeColor: accent.primary,

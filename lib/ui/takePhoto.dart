@@ -24,7 +24,7 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  File _image;
+   File _image = File('');
 
   // TODO: Load emotion detection model
 
