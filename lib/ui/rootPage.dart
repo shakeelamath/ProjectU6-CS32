@@ -13,7 +13,6 @@ import 'package:musify/ui/morePage.dart';
 import 'package:musify/ui/player.dart';
 import 'package:musify/ui/playlistsPage.dart';
 import 'package:musify/ui/searchPage.dart';
-import 'package:musify/ui/signUpPage.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:musify/ui/takePhoto.dart';
 

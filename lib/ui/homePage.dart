@@ -20,14 +20,15 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(
+        title: const Text(
           'ProjectU6',
           style: TextStyle(
-            color: accent.primary,
+            color: Colors.white,
             fontSize: 35,
             fontWeight: FontWeight.w800,
           ),
         ),
+        backgroundColor: Colors.pink,
         elevation: 0,
       ),
       body: SingleChildScrollView(
