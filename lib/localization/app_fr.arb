@@ -52,5 +52,6 @@
   "userPlaylists": "Listes de lecture utilisateur",
   "yourDownloadedSongsHere": "Vos chansons téléchargées ici",
   "yourFavoriteSongsHere": "Vos chansons préférées ici",
-  "youtubePlaylistID": "ID de la liste de playlist Youtube"
+  "youtubePlaylistID": "ID de la liste de playlist Youtube",
+  "shazam":"Shazam"
 }
