@@ -296,3 +296,35 @@ Future getSongLyrics(String artist, String title) async {
 
   return lyrics.value;
 }
+
+
+Future<List> getSongsByMood(String mood) async {
+  final moodsMap = <String, dynamic>{
+    'happy': {
+      'id': 'PL4o29bINVT4EG_y-k5jGoOu3-Am8Nvi10',
+      'range': [1, 4]
+    },
+    'sad': {
+      'id': 'PLFgquLnL59alGJcdc0BEZJm7E5K5LaKk8',
+      'range': [1, 3]
+    },
+    'calm': {
+      'id': 'PLZqsyBiYZFQ2VnV6q3lzY9XMECwi1C_hJ',
+      'range': [0, 2]
+    },
+    'angry': {
+      'id': 'PLZqsyBiYZFQ2VnV6q3lzY9XMECwi1C_hJ',
+      'range': [7, 9]
+    },
+    'neutral': {
+      'id': 'PLWlTX25IDqIxeUap8wmf0NgQrrzORBWhk',
+      'range': [0, 9]
+    },
+  };
+
+  final String playlistId = moodsMap[mood]['id'];
+  final List range = moodsMap[mood]['range'];
+  final List playlistSongs = await getSongsFromPlaylist(playlistId);
+
+  return playlistSongs.sublist(range[0], range[1]);
+}
