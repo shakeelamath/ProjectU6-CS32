@@ -76,7 +76,7 @@ class AppState extends State<Musify> {
       BottomNavBarItem(
         icon: const Icon(MdiIcons.googleNearby),
         title: Text(
-          AppLocalizations.of(context)!.nearBySharing,
+          AppLocalizations.of(context)!.search,
           maxLines: 1,
         ),
         activeColor: accent.primary,
