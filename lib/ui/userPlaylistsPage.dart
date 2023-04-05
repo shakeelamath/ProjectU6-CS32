@@ -28,6 +28,7 @@ class _UserPlaylistsPageState extends State<UserPlaylistsPage> {
             fontWeight: FontWeight.w700,
           ),
         ),
+        backgroundColor: Colors.pink,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,

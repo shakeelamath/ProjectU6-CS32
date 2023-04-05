@@ -52,5 +52,6 @@
   "userPlaylists": "Playlisty użytkownika",
   "yourDownloadedSongsHere": "Twoje pobrane utwory tutaj",
   "yourFavoriteSongsHere": "Twoje ulubione piosenki tutaj",
-  "youtubePlaylistID": "Identyfikator playlisty YouTube"
+  "youtubePlaylistID": "Identyfikator playlisty YouTube",
+  "shazam":"Shazam"
 }

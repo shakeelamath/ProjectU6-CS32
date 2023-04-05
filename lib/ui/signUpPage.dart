@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:musify/signUpInfo/SignUpData.dart';
+import 'logInpage.dart';
 
 class SignupPage extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class _SignupPageState extends State<SignupPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _agreeToTerms = false;
 
   @override
   Widget build(BuildContext context) {
@@ -94,40 +96,48 @@ class _SignupPageState extends State<SignupPage> {
                       return null;
                     },
                   ),
+
+                  CheckboxListTile(
+                    title: Text('I agree to the terms and conditions'),
+                    value: _agreeToTerms,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _agreeToTerms = newValue!;
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
                   SizedBox(height: 16),
                   ElevatedButton(
                     child: Text('Sign Up'),
-                    onPressed: () async {
-                      if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+                    onPressed: () async{
+                      if (_formKey.currentState != null && _formKey.currentState!.validate() && _agreeToTerms) {
                         // form is valid
                         String username = _userNameController.text;
                         String name = _nameController.text;
                         String email = _emailController.text;
                         String password = _passwordController.text;
-
-                        final signUpData = SignUpData(username: username, name: name, email: email, password: password);
-                        storeSignUpData(signUpData);
-
-                        if(checkSignUpData(username, email)!=null){
-                          /**ScaffoldMessenger.of(context).showSnackBar(
+                        // add your own implementation here
+                        /**final signUpData = SignUpData(username: username, name: name, email: email, password: password);
+                        await storeSignUpData(signUpData);**/
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (context) =>   LogInPage ()),
+                        );
+                        /**if(checkSignUpData(username, email)!=null){
+                            ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('These details are already exist.'),
-                              backgroundColor: Colors.red,
+                            content: Text('These details are already exist.'),
+                            backgroundColor: Colors.red,
                             ),
-                          );**/
-                        }
-                        else{
-                          /**ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Your account is created.'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                          Navigator.push(context,
-                            MaterialPageRoute(builder: (context) =>   MyApps()
-                            ),
-                          );**/
-                        }
+                            );**/
+                      }
+                      else if (!_agreeToTerms) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Please agree to the terms and conditions'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
                       }
                     },
                   ),

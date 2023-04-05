@@ -14,8 +14,8 @@ import 'package:musify/services/audio_handler.dart';
 import 'package:musify/services/audio_manager.dart';
 import 'package:musify/style/appColors.dart';
 import 'package:musify/style/appTheme.dart';
+import 'package:musify/ui/logInpage.dart';
 import 'package:musify/ui/morePage.dart';
-import 'package:musify/ui/rootPage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 GetIt getIt = GetIt.instance;
@@ -40,6 +40,7 @@ final codes = <String, String>{
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
 
   static Future<void> setThemeMode(
     BuildContext context,
@@ -168,7 +169,7 @@ class _MyAppState extends State<MyApp> {
           locale: _locale,
           initialRoute: '/',
           routes: {
-            '/': (context) => Musify(),
+            '/': (context) =>  const LogInPage(),
           },
         );
       },
@@ -185,6 +186,8 @@ void main() async {
   await initialisation();
   runApp(const MyApp());
 }
+
+
 
 Future<void> initialisation() async {
   final session = await AudioSession.instance;

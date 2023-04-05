@@ -40,12 +40,13 @@ class _SearchPageState extends State<SearchPage> {
         centerTitle: true,
         title: Text(
           AppLocalizations.of(context)!.search,
-          style: TextStyle(
-            color: accent.primary,
+          style: const TextStyle(
+            color: Colors.white,
             fontSize: 30,
             fontWeight: FontWeight.w700,
           ),
         ),
+        backgroundColor: Colors.pink,
         elevation: 0,
       ),
       body: SingleChildScrollView(

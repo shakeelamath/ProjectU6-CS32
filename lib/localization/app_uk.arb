@@ -52,5 +52,6 @@
   "userPlaylists": "Списки відтворення користувачів",
   "yourDownloadedSongsHere": "Ваші завантажені пісні тут",
   "yourFavoriteSongsHere": "Ваші улюблені пісні тут",
-  "youtubePlaylistID": "Ідентифікатор списку відтворення YouTube"
+  "youtubePlaylistID": "Ідентифікатор списку відтворення YouTube",
+  "shazam":"Shazam"
 }

@@ -43,12 +43,13 @@ class _MorePageState extends State<MorePage> {
         centerTitle: true,
         title: Text(
           AppLocalizations.of(context)!.more,
-          style: TextStyle(
-            color: accent.primary,
+          style: const TextStyle(
+            color: Colors.white,
             fontSize: 25,
             fontWeight: FontWeight.w700,
           ),
         ),
+        backgroundColor: Colors.pink,
         elevation: 0,
       ),
       body: SingleChildScrollView(child: SettingsCards()),
