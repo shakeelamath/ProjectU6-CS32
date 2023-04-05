@@ -24,7 +24,8 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-   File _image = File('');
+  File _image = File('');
+  String _selectedEmotion = 'Select Emotion';
 
   // TODO: Load emotion detection model
 
@@ -58,15 +59,145 @@ class _CameraScreenState extends State<CameraScreen> {
           },
         ),
       ),
-      body: Center(
-        child: _image == null
-            ? Text('No image selected.')
-            : Image.file(_image),
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EmotionSelectionScreen()),
+                );
+              },
+              child: Text(
+                _selectedEmotion,
+                style: TextStyle(fontSize: 20.0),
+              ),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: _image == null
+                  ? Text('No image selected.')
+                  : Image.file(_image),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _takePicture,
         tooltip: 'Take Picture',
         child: Icon(Icons.camera_alt),
+      ),
+    );
+  }
+}
+
+class EmotionSelectionScreen extends StatefulWidget {
+  @override
+  _EmotionSelectionScreenState createState() => _EmotionSelectionScreenState();
+}
+
+class _EmotionSelectionScreenState extends State<EmotionSelectionScreen> {
+  String _selectedEmotion = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Select Emotion'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.pink,
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedEmotion = 'Emotion: Happy';
+                });
+              },
+              child: Text('Happy'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedEmotion = 'Emotion: Sad';
+                });
+              },
+              child: Text('Sad'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedEmotion = 'Emotion: Angry';
+                });
+              },
+              child: Text('Angry'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedEmotion = 'Emotion: Surprised';
+                });
+              },
+              child: Text('Surprised'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, _selectedEmotion);
+              },
+              child: Text('Select'),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.pink,
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
