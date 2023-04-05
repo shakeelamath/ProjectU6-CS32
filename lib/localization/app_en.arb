@@ -26,6 +26,7 @@
   "lyrics": "Lyrics",
   "lyricsNotAvailable": "No lyrics available ;(",
   "more": "More",
+  "nearBySharing":"Near by sharing",
   "notYTlist": "This is not a Youtube playlist ID",
   "nowPlaying": "Now playing",
   "others": "Others",
@@ -51,5 +52,6 @@
   "userPlaylists": "User playlists",
   "yourDownloadedSongsHere": "Your downloaded songs here",
   "yourFavoriteSongsHere": "Your favorite songs here",
-  "youtubePlaylistID": "Youtube playlist ID"
+  "youtubePlaylistID": "Youtube playlist ID",
+  "shazam":"shazam"
 }

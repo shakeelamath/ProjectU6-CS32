@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:musify/signUpInfo/SignUpData.dart';
 
 class SignupPage extends StatefulWidget {
   @override
@@ -96,16 +97,37 @@ class _SignupPageState extends State<SignupPage> {
                   SizedBox(height: 16),
                   ElevatedButton(
                     child: Text('Sign Up'),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState != null && _formKey.currentState!.validate()) {
-                        // form is valid, do something here
-                        // e.g. submit the form data to server
-                        // or save the data to local storage
+                        // form is valid
                         String username = _userNameController.text;
                         String name = _nameController.text;
                         String email = _emailController.text;
                         String password = _passwordController.text;
-                        // add your own implementation here
+
+                        final signUpData = SignUpData(username: username, name: name, email: email, password: password);
+                        storeSignUpData(signUpData);
+
+                        if(checkSignUpData(username, email)!=null){
+                          /**ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('These details are already exist.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );**/
+                        }
+                        else{
+                          /**ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Your account is created.'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                          Navigator.push(context,
+                            MaterialPageRoute(builder: (context) =>   MyApps()
+                            ),
+                          );**/
+                        }
                       }
                     },
                   ),
