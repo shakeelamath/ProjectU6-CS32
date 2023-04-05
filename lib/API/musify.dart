@@ -1,298 +1,340 @@
-import 'dart:convert';
-import 'dart:math';
-import 'package:audio_service/audio_service.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:hive/hive.dart';
-import 'package:http/http.dart' as http;
-import 'package:musify/helper/formatter.dart';
-import 'package:musify/helper/mediaitem.dart';
-import 'package:musify/services/audio_handler.dart';
-import 'package:musify/services/audio_manager.dart';
-import 'package:musify/services/data_manager.dart';
-import 'package:musify/services/ext_storage.dart';
-import 'package:musify/services/lyrics_service.dart';
-import 'package:on_audio_query/on_audio_query.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+import 'dart:io';
 
-final yt = YoutubeExplode();
-final OnAudioQuery _audioQuery = OnAudioQuery();
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-final random = Random();
+import '../API/musify.dart';
+import 'homePage.dart';
 
-List playlists = [];
-List userPlaylists = Hive.box('user').get('playlists', defaultValue: []);
-List userLikedSongsList = Hive.box('user').get('likedSongs', defaultValue: []);
-List suggestedPlaylists = [];
-List activePlaylist = [];
 
-final lyrics = ValueNotifier<String>('null');
-String lastFetchedLyrics = 'null';
-
-int id = 0;
-
-Future<List> fetchSongsList(String searchQuery) async {
-  final List list = await yt.search.search(searchQuery);
-  final searchedList = [
-    for (final s in list)
-      returnSongLayout(
-        0,
-        s,
-      )
-  ];
-
-  return searchedList;
-}
-
-Future get10Music(dynamic playlistid) async {
-  final List playlistSongs =
-      await getData('cache', 'playlist10Songs$playlistid') ?? [];
-  if (playlistSongs.isEmpty) {
-    var index = 0;
-    await for (final song in yt.playlists.getVideos(playlistid).take(10)) {
-      playlistSongs.add(
-        returnSongLayout(
-          index,
-          song,
-        ),
-      );
-      index += 1;
-    }
-
-    addOrUpdateData('cache', 'playlist10Songs$playlistid', playlistSongs);
+class TakePhoto extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Emotion Detection',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.pink,
+      ),
+      home: CameraScreen(),
+    );
   }
-
-  return playlistSongs;
 }
 
-Future<List<dynamic>> getUserPlaylists() async {
-  final playlistsByUser = [];
-  for (final playlistID in userPlaylists) {
-    final plist = await yt.playlists.get(playlistID);
-    playlistsByUser.add({
-      'ytid': plist.id,
-      'title': plist.title,
-      'subtitle': 'Just Updated',
-      'header_desc': plist.description.length < 120
-          ? plist.description
-          : plist.description.substring(0, 120),
-      'type': 'playlist',
-      'image': '',
-      'list': []
+class CameraScreen extends StatefulWidget {
+
+  @override
+  _CameraScreenState createState() => _CameraScreenState();
+}
+
+class _CameraScreenState extends State<CameraScreen> {
+  File _image = File('');
+  String _selectedEmotion = 'Select Emotion';
+
+  // TODO: Load emotion detection model
+
+  Future<void> _takePicture() async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.camera);
+    setState(() {
+      if (image != null) {
+        _image = File(image.path);
+        // TODO: Pass captured image to the emotion detection model and get the predicted emotion
+        // You can update the UI here based on the predicted emotion
+      }
     });
   }
-  return playlistsByUser;
-}
 
-String addUserPlaylist(String playlistId, BuildContext context) {
-  if (playlistId.length != 34) {
-    return '${AppLocalizations.of(context)!.notYTlist}!';
-  } else {
-    userPlaylists.add(playlistId);
-    addOrUpdateData('user', 'playlists', userPlaylists);
-    return '${AppLocalizations.of(context)!.addedSuccess}!';
-  }
-}
-
-void removeUserPlaylist(String playlistId) {
-  userPlaylists.remove(playlistId);
-  addOrUpdateData('user', 'playlists', userPlaylists);
-}
-
-Future<void> addUserLikedSong(dynamic songId) async {
-  userLikedSongsList
-      .add(await getSongDetails(userLikedSongsList.length, songId));
-  addOrUpdateData('user', 'likedSongs', userLikedSongsList);
-}
-
-void removeUserLikedSong(dynamic songId) {
-  userLikedSongsList.removeWhere((song) => song['ytid'] == songId);
-  addOrUpdateData('user', 'likedSongs', userLikedSongsList);
-}
-
-bool isSongAlreadyLiked(dynamic songId) {
-  return userLikedSongsList.where((song) => song['ytid'] == songId).isNotEmpty;
-}
-
-Future<List> getPlaylists([int? playlistsNum]) async {
-  if (playlists.isEmpty) {
-    playlists =
-        json.decode(await rootBundle.loadString('assets/db/playlists.db.json'))
-            as List;
-  }
-
-  if (playlistsNum != null) {
-    if (suggestedPlaylists.isEmpty) {
-      suggestedPlaylists =
-          (playlists.toList()..shuffle()).take(playlistsNum).toList();
-    }
-    return suggestedPlaylists;
-  } else {
-    return playlists;
-  }
-}
-
-Future<List> searchPlaylist(String query) async {
-  if (playlists.isEmpty) {
-    playlists =
-        json.decode(await rootBundle.loadString('assets/db/playlists.db.json'))
-            as List;
-  }
-
-  return playlists
-      .where(
-        (playlist) =>
-            playlist['title'].toLowerCase().contains(query.toLowerCase()),
-      )
-      .toList();
-}
-
-Future<Map> getRandomSong() async {
-  const playlistId = 'PLgzTt0k8mXzEk586ze4BjvDXR7c-TUSnx';
-  final List playlistSongs = await getSongsFromPlaylist(playlistId);
-
-  return playlistSongs[random.nextInt(playlistSongs.length)];
-}
-
-Future getSongsFromPlaylist(dynamic playlistid) async {
-  final List playlistSongs =
-      await getData('cache', 'playlistSongs$playlistid') ?? [];
-  if (playlistSongs.isEmpty) {
-    var index = 0;
-    await for (final song in yt.playlists.getVideos(playlistid)) {
-      playlistSongs.add(
-        returnSongLayout(
-          index,
-          song,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Emotion Detection'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.pink,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          },
         ),
-      );
-      index += 1;
-    }
-    addOrUpdateData('cache', 'playlistSongs$playlistid', playlistSongs);
-  }
-
-  return playlistSongs;
-}
-
-Future<void> setActivePlaylist(List plist) async {
-  if (plist is List<SongModel>) {
-    activePlaylist = [];
-    id = 0;
-    final activeTempPlaylist = <MediaItem>[
-      for (final song in plist) songModelToMediaItem(song, song.data)
-    ];
-
-    await MyAudioHandler().addQueueItems(activeTempPlaylist);
-
-    play();
-  } else {
-    activePlaylist = plist;
-    id = 0;
-    await playSong(activePlaylist[id]);
-  }
-}
-
-Future getPlaylistInfoForWidget(dynamic id) async {
-  var searchPlaylist = playlists.where((list) => list['ytid'] == id).toList();
-  var isUserPlaylist = false;
-
-  if (searchPlaylist.isEmpty) {
-    final usPlaylists = await getUserPlaylists();
-    searchPlaylist = usPlaylists.where((list) => list['ytid'] == id).toList();
-    isUserPlaylist = true;
-  }
-
-  final playlist = searchPlaylist[0];
-
-  if (playlist['list'].length == 0) {
-    searchPlaylist[searchPlaylist.indexOf(playlist)]['list'] =
-        await getSongsFromPlaylist(playlist['ytid']);
-    if (!isUserPlaylist) {
-      playlists[playlists.indexOf(playlist)]['list'] =
-          searchPlaylist[searchPlaylist.indexOf(playlist)]['list'];
-    }
-  }
-
-  return playlist;
-}
-
-Future<dynamic> getSong(dynamic songId, bool geturl) async {
-  final manifest = await yt.videos.streamsClient.getManifest(songId);
-  if (geturl) {
-    return manifest.audioOnly.withHighestBitrate().url.toString();
-  } else {
-    return manifest.audioOnly.withHighestBitrate();
-  }
-}
-
-Future getSongDetails(dynamic songIndex, dynamic songId) async {
-  final song = await yt.videos.get(songId);
-  return returnSongLayout(
-    songIndex,
-    song,
-  );
-}
-
-Future<List<SongModel>> getLocalSongs() async {
-  var localSongs = <SongModel>[];
-  if (await ExtStorageProvider.requestPermission(Permission.storage)) {
-    localSongs = await _audioQuery.querySongs(
-      path: await ExtStorageProvider.getExtStorage(dirName: 'Music'),
-    );
-  }
-
-  return localSongs;
-}
-
-Future<List<Map<String, int>>> getSkipSegments(String id) async {
-  try {
-    final res = await http.get(
-      Uri(
-        scheme: 'https',
-        host: 'sponsor.ajay.app',
-        path: '/api/skipSegments',
-        queryParameters: {
-          'videoID': id,
-          'category': [
-            'sponsor',
-            'selfpromo',
-            'interaction',
-            'intro',
-            'outro',
-            'music_offtopic'
-          ],
-          'actionType': 'skip'
-        },
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EmotionSelectionScreen()),
+                );
+              },
+              child: Text(
+                _selectedEmotion,
+                style: TextStyle(fontSize: 20.0),
+              ),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: _image == null
+                  ? Text('No image selected.')
+                  : Image.file(_image),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _takePicture,
+        tooltip: 'Take Picture',
+        child: Icon(Icons.camera_alt),
       ),
     );
-    if (res.body != 'Not Found') {
-      final data = jsonDecode(res.body);
-      final segments = data.map((obj) {
-        return Map.castFrom<String, dynamic, String, int>({
-          'start': obj['segment'].first.toInt(),
-          'end': obj['segment'].last.toInt(),
-        });
-      }).toList();
-      return List.castFrom<dynamic, Map<String, int>>(segments);
-    } else {
-      return [];
+  }
+}
+
+class EmotionSelectionScreen extends StatefulWidget {
+  @override
+  _EmotionSelectionScreenState createState() => _EmotionSelectionScreenState();
+}
+
+class _EmotionSelectionScreenState extends State<EmotionSelectionScreen> {
+  String _selectedEmotion = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Select Emotion'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.pink,
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedEmotion = 'Emotion: Happy';
+                });
+              },
+              child: Text('Happy'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedEmotion = 'Emotion: Sad';
+                });
+              },
+              child: Text('Sad'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedEmotion = 'Emotion: Angry';
+                });
+              },
+              child: Text('Angry'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedEmotion = 'Emotion: Surprised';
+                });
+              },
+              child: Text('Surprised'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, _selectedEmotion);
+              },
+              child: Text('Select'),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.pink,
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class EmotionSelectionScreen2 extends StatefulWidget {
+  @override
+  _EmotionSelectionScreenState createState() => _EmotionSelectionScreenState();
+}
+
+class _EmotionSelectionScreenState2 extends State<EmotionSelectionScreen> {
+  String _selectedEmotion = '';
+
+  void _playSong(String emotion) {
+    switch (emotion) {
+      case 'Happy':
+      // code to play happy song
+        print('Playing happy song!');
+        break;
+      case 'Sad':
+      // code to play sad song
+        print('Playing sad song!');
+        break;
+      case 'Angry':
+      // code to play angry song
+        print('Playing angry song!');
+        break;
+      case 'Surprised':
+      // code to play surprised song
+        print('Playing surprised song!');
+        break;
     }
-  } catch (e, stack) {
-    debugPrint('$e $stack');
-    return [];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Select Emotion'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.pink,
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedEmotion = 'Happy';
+                });
+                _playSong('Happy');
+              },
+              child: Text('Happy'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedEmotion = 'Sad';
+                });
+                _playSong('Sad');
+              },
+              child: Text('Sad'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedEmotion = 'Angry';
+                });
+                _playSong('Angry');
+              },
+              child: Text('Angry'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedEmotion = 'Surprised';
+                });
+                _playSong('Surprised');
+              },
+              child: Text('Surprised'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, _selectedEmotion);
+              },
+              child: Text('Select'),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.pink,
+                padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
-Future getSongLyrics(String artist, String title) async {
-  if (lastFetchedLyrics != '$artist - $title') {
-    lyrics.value = 'null';
-    final _lyrics = await Lyrics().getLyrics(artist: artist, track: title);
-    lyrics.value = _lyrics;
-    lastFetchedLyrics = '$artist - $title';
-    return _lyrics;
-  }
 
-  return lyrics.value;
-}
