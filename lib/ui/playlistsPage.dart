@@ -30,12 +30,13 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
         centerTitle: true,
         title: Text(
           AppLocalizations.of(context)!.playlists,
-          style: TextStyle(
-            color: accent.primary,
+          style: const TextStyle(
+            color: Colors.white,
             fontSize: 30,
             fontWeight: FontWeight.w700,
           ),
         ),
+        backgroundColor: Colors.pink,
         elevation: 0,
       ),
       body: SingleChildScrollView(
