@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-
+import 'package:image/image.dart' as imageLib;
+import 'package:musify/API/musify.dart';
 import 'homePage.dart';
+import 'package:musify/faceRecognition/emotionDetection.dart';
 
 class TakePhoto extends StatelessWidget {
   @override
@@ -36,7 +38,8 @@ class _CameraScreenState extends State<CameraScreen> {
       if (image != null) {
         _image = File(image.path);
         // TODO: Pass captured image to the emotion detection model and get the predicted emotion
-        // You can update the UI here based on the predicted emotion
+        emotionDetection test1 = new emotionDetection();
+        String result = test1.predict(imageLib.Image.file(_image));
       }
     });
   }

@@ -21,6 +21,9 @@ environment:
   sdk: '>=2.18.2 <3.0.0'
   flutter: ^3.3.7
 
+dependency_overrides:
+  ffi: ^2.0.1
+
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
 # consider running `flutter pub upgrade --major-versions`. Alternatively,
@@ -54,6 +57,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   image_picker: ^0.8.3
   camera: ^0.9.4+5
+  tflite_flutter: ^0.9.1
+  tflite_flutter_helper: ^0.3.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.10.0
