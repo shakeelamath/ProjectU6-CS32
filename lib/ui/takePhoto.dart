@@ -111,6 +111,115 @@ class EmotionSelectionScreen extends StatefulWidget {
 class _EmotionSelectionScreenState extends State<EmotionSelectionScreen> {
   String _selectedEmotion = '';
 
+  // Define a list of happy playlists or songs
+  List<String> happyPlaylists = [
+    "Happy Hits",
+    "Feelin' Good",
+    "Good Vibes",
+    "Upbeat",
+  ];
+
+  List<String> sadPlaylists = [
+    "Heartbreak",
+    "Sad Songs",
+    "Tearjerkers",
+    "Breakup Songs",
+  ];
+
+  List<String> angryPlaylists = [
+    "Rockin' Rage",
+    "Metal Madness",
+    "Furious Funk",
+    "Punk Power",
+  ];
+
+  List<String> surprisedPlaylists = [
+    "Mind-Blowing Music",
+    "Electrifying Sounds",
+    "Unexpected Beats",
+    "Offbeat Rhythms",
+  ];
+
+  // Use the selected emotion to search for a happy playlist
+  void searchPlaylist(String selectedEmotion) {
+    if (selectedEmotion == 'Emotion: Happy') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Suggested Playlist'),
+            content: Text('Here\'s a happy playlist: ${happyPlaylists[0]}'),
+            actions: [
+              TextButton(
+                child: Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else if (selectedEmotion == 'Emotion: Sad') {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Suggested Playlist'),
+              content: Text('Here\'s a sad playlist: ${sadPlaylists[0]}'),
+              actions: [
+                TextButton(
+                  child: Text('Close'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      // Display a sad playlist
+    } else if (selectedEmotion == 'Emotion: Angry') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Suggested Playlist'),
+            content: Text('Here\'s an angry playlist: ${angryPlaylists[0]}'),
+            actions: [
+              TextButton(
+                child: Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      // Display an angry playlist
+    } else if (selectedEmotion == 'Emotion: Surprised') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Suggested Playlist'),
+            content: Text('Here\'s a surprised playlist: ${surprisedPlaylists[0]}'),
+            actions: [
+              TextButton(
+                child: Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      // Display a surprised playlist
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,6 +240,7 @@ class _EmotionSelectionScreenState extends State<EmotionSelectionScreen> {
                 setState(() {
                   _selectedEmotion = 'Emotion: Happy';
                 });
+                searchPlaylist(_selectedEmotion);
               },
               child: Text('Happy'),
               style: ElevatedButton.styleFrom(
@@ -146,6 +256,7 @@ class _EmotionSelectionScreenState extends State<EmotionSelectionScreen> {
                 setState(() {
                   _selectedEmotion = 'Emotion: Sad';
                 });
+                searchPlaylist(_selectedEmotion);
               },
               child: Text('Sad'),
               style: ElevatedButton.styleFrom(
@@ -161,6 +272,7 @@ class _EmotionSelectionScreenState extends State<EmotionSelectionScreen> {
                 setState(() {
                   _selectedEmotion = 'Emotion: Angry';
                 });
+                searchPlaylist(_selectedEmotion);
               },
               child: Text('Angry'),
               style: ElevatedButton.styleFrom(
@@ -176,6 +288,7 @@ class _EmotionSelectionScreenState extends State<EmotionSelectionScreen> {
                 setState(() {
                   _selectedEmotion = 'Emotion: Surprised';
                 });
+                searchPlaylist(_selectedEmotion);
               },
               child: Text('Surprised'),
               style: ElevatedButton.styleFrom(
@@ -190,7 +303,7 @@ class _EmotionSelectionScreenState extends State<EmotionSelectionScreen> {
               onPressed: () {
                 Navigator.pop(context, _selectedEmotion);
               },
-              child: Text('Select'),
+              child: Text('Return'),
               style: ElevatedButton.styleFrom(
                 primary: Colors.pink,
                 padding: EdgeInsets.all(16.0),
@@ -205,3 +318,10 @@ class _EmotionSelectionScreenState extends State<EmotionSelectionScreen> {
     );
   }
 }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+
