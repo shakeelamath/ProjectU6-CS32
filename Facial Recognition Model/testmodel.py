@@ -24,9 +24,9 @@ emotion_detection_model.load_weights("Project-Flutter---Musify---MusicApplicatio
 print("Loaded model from disk")
 
 # start the webcam feed
-cap = cv2.VideoCapture(0)
+#cap = cv2.VideoCapture(0)
 
-#cap = cv2.VideoCapture("C:\\JustDoIt\\ML\\Sample_videos\\emotion_sample6.mp4")
+cap = cv2.VideoCapture("")
 
 while True:
     # Find haar cascade to draw bounding box around face
@@ -57,9 +57,3 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
-
-converter = tf.lite.TFLiteConverter.from_saved_model('saved_model')
-tflite_model = converter.convert()
-
-with open('model.tflite', 'wb') as f:
-    f.write(tflite_model)

@@ -12,9 +12,11 @@ class EmotionDetection {
   final List<String> _labels = [
     'Angry',
     'Disgusted',
-    'Fearful',
+    'Afraid',
     'Happy',
-    'Neutral'
+    'Neutral',
+    'Sad',
+    'Surprised'
   ];
 
   final String kModelFileName = 'tf/model.tflite';
@@ -22,11 +24,11 @@ class EmotionDetection {
 
   /// Shapes of output tensors
   final List<List<double>> _outputShapes = [
-    [0, 1, 2, 3, 4]
+    [0, 1, 2, 3, 4, 5, 6]
   ];
 
   /// Number of results to show
-  final int kNumResults = 5;
+  final int kNumResults = 7;
 
   /// convert the gray scalded image to bytes.
   Uint8List _grayscaleToByteListFloat32(image_lib.Image image, int inputSize) {
@@ -60,17 +62,18 @@ class EmotionDetection {
     // run inference
     _interpreter!.run(processedInput, _outputShapes);
 
-    // Using labelOffset = 1 as ??? at index 0
-    final labelOffset = 1;
-
-    for (var i = 0; i < kNumResults; i++) {
-      // Label string
-      final labelIndex = _outputShapes[0][i] + labelOffset;
-      final label = _labels.elementAt(labelIndex.toInt());
-      return label;
+    // Find the maximum index value.
+    var index = 0;
+    var outputValue = _outputShapes[0][0];
+    for (var i = 1; i < kNumResults; i++) {
+      final value = _outputShapes[0][i];
+      if (value > outputValue) {
+        outputValue = value;
+        index = i;
+      }
     }
 
-    return 'Undefined';
+    return _labels.elementAt(index);
   }
 
   /// Gets the interpreter instance
